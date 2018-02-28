@@ -4,21 +4,27 @@ var Api = function(params, defaults){
     this.hosts = params; // assume that the whole object is hosts
     if(typeof params.hosts != "undefined") this.hosts = params.hosts; // but if hosts is explicitly defined in params then redefine hosts
     if(typeof params.client_cert != "undefined") this.client_cert = params.client_cert; // define client_cert if it is given
-    this.defaults = (params.defaults)? params.defaults : {}; // set the defaults if they exist
+    this.defaults = (typeof defaults == "undefined")? {} : defaults; // set the defaults if they exist
 }
 
 Api.prototype = {
-    get : function(host, route, request_options){
-        if(typeof request_options == "undefined") request_options = {};
+    get : function(host, route, data){
+        var request_options = {};
+        request_options.qs = data;
         request_options.method = "GET"; // define the method
-        return this.promise_request(host, route, request_options); // make general request
+        return this.request(host, route, request_options); // make general request
     },
-    post : function(host, route, request_options){
-        if(typeof request_options == "undefined") request_options = {};
+    post : function(host, route, data){
+        var request_options = {};
+        if(this.defaults.json == true){
+            request_options.body = data; // define as body if json is true
+        } else {
+            request_options.form = data; // define as form otherwise
+        }
         request_options.method = "POST"; // define the method
-        return this.promise_request(host, route, request_options); // make general request
+        return this.request(host, route, request_options); // make general request
     },
-    promise_request : function(host, route, request_options){
+    request : function(host, route, request_options){
         // validate request
         if(typeof this.hosts[host] == "undefined") throw "host (" + host + ") is not defined)";
 
