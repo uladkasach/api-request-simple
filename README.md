@@ -20,6 +20,7 @@ api.get("host_name", "/request/path/", data)
 replaces
 
 ```js
+var promise_request = require("require-promise");
 var hosts = require("/config/hosts.json")
 var data = {foo : "bar"}
 
@@ -35,6 +36,43 @@ return promise_request(options);
 ```
 
 
-and it particularly shines when you wish to use requests with client-certificates:
+and it particularly shines when you wish to use requests with client-certificates, where :
 
-TODO
+```js
+var hosts = require(process.env.root+"/config/hosts.json");
+var fs = require('fs');
+var client_cert = {
+    cert : fs.readFileSync(process.env.root+'/config/workhorse.pem'),
+    key : fs.readFileSync(process.env.root+'/config/workhorse.key'),
+    ca : fs.readFileSync(process.env.root+'/config/ca.pem'),
+}
+var api = new (require("api-request-simple"))({hosts:hosts, client_cert : client_cert });
+
+var data = {foo : "bar"}
+api.get("host_name", "/request/path/", data);
+```
+
+
+replaces
+
+```js
+
+var promise_request = require("require-promise");
+var hosts = require(process.env.root+"/config/hosts.json");
+var fs = require('fs');
+var client_cert = {
+    cert : fs.readFileSync(process.env.root+'/config/workhorse.pem'),
+    key : fs.readFileSync(process.env.root+'/config/workhorse.key'),
+    ca : fs.readFileSync(process.env.root+'/config/ca.pem'),
+}
+
+var options = {
+    method : 'GET',
+    url: "http://" + hosts["host_name"] + "/request/path",
+    cert: client_cert.cert,
+    key: client_cert.key,
+    ca: client_cert.ca,
+    qs : data, // convert "data" to qs
+};
+var promise_to_register = promise_request(options)
+```
