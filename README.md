@@ -11,7 +11,7 @@ It is meant to be used in situations where you have a finite and predetermined s
 In these cases
 ```js
 var hosts = require("/config/hosts.json")
-var api = new require("api-request-simple")(hosts)
+var api = new (require("api-request-simple"))(hosts)
 
 var data = {foo : "bar"}
 api.get("host_name", "/request/path/", data)
