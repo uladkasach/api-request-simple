@@ -26,7 +26,10 @@ Api.prototype = {
     },
     request : function(host, route, request_options){
         // validate request
-        if(typeof this.hosts[host] == "undefined") throw new Error("host (" + host + ") is not defined");
+        if(typeof this.hosts[host] == "undefined") throw "host (" + host + ") is not defined";
+
+        // normalize route - it should always start with a "/"
+        if(route[0] !== "/") route = "/" + route;
 
         // begin options with defaults
         var options = this.defaults;
